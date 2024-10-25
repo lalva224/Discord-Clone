@@ -1,8 +1,9 @@
 'use client'
-import { useMutation, useQuery } from "convex/react";
+import { Authenticated, Unauthenticated, useMutation, useQuery } from "convex/react";
 import Image from "next/image";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { SignInButton } from "@clerk/nextjs";
 // type vs interface: type is more expressive but it is closed, meaning u can't merge. interface is open, meaning you can add more properties to it
 type  Message = {
   sender: string
@@ -23,7 +24,7 @@ export default function Home() {
     }
   return (
    <>
-
+  <Authenticated>
    {
     // ? optional chaining. if messages is null, null.map will give me an error, this way we prevent that.
     messages?.map((message,index)=>(
@@ -41,7 +42,10 @@ export default function Home() {
     <button type = 'submit'>Send</button>
    </form>
 
-   
+   </Authenticated>
+   <Unauthenticated>
+    <SignInButton/>
+   </Unauthenticated>
    </>
   );
 }
