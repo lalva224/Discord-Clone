@@ -24,7 +24,7 @@ export default function Home() {
     }
   return (
    <>
-  <Authenticated>
+  
    {
     // ? optional chaining. if messages is null, null.map will give me an error, this way we prevent that.
     messages?.map((message,index)=>(
@@ -42,10 +42,7 @@ export default function Home() {
     <button type = 'submit'>Send</button>
    </form>
 
-   </Authenticated>
-   <Unauthenticated>
-    <SignInButton/>
-   </Unauthenticated>
+   
    </>
   );
 }
