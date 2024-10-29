@@ -4,6 +4,7 @@ import "./globals.css";
 import { ConvexClientProvider } from "./convex-client-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import Head from 'next/head';
+import { Toaster } from "sonner";
 
 
 
@@ -24,7 +25,10 @@ export default function RootLayout({
       <body
       >
         <ClerkProvider dynamic>
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+        <ConvexClientProvider>
+          {children}
+          <Toaster/>
+        </ConvexClientProvider>
         </ClerkProvider>
       </body>
     </html>

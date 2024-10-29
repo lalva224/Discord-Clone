@@ -52,7 +52,7 @@ export const remove = internalMutation({
 })
 
 //how do i randomly figure out type?
-const getCurrentUser = async(ctx:QueryCtx | MutationCtx)=>{
+export const getCurrentUser = async(ctx:QueryCtx | MutationCtx)=>{
     //This is for authenticated users. For when I need their clerk Ids. returns objects with several properties. Among them is clerk user id. 
     const identity = await ctx.auth.getUserIdentity()
     if(!identity){
