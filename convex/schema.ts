@@ -30,7 +30,14 @@ export default defineSchema({
     directMessageMembers: defineTable({
     directMessage : v.id('directMessages'),
     user: v.id('users')
-    }).index('by_dm',['directMessage']).index('by_dm_user',['directMessage','user']).index('by_user', ['user'])
+    }).index('by_dm',['directMessage']).index('by_dm_user',['directMessage','user']).index('by_user', ['user']),
+
+    //shows when the other user is typing.
+    typingIndicators : defineTable({
+        user: v.id('users'),
+        directMessage: v.id('directMessages'),
+        expirationDate: v.number()
+    }).index('by_user_dm',['user','directMessage']).index('by_dm',['directMessage'])
 })
 
 //create users table and webhook. This webhook can sync user information from clerk into convex

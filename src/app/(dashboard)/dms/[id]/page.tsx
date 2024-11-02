@@ -37,6 +37,7 @@ export default function MessagePage({params}:{params:Promise<{id:Id<'directMessa
             {/**how doss this look? */}
             <ScrollArea className='h-full py-4'>
             {messages?.map((message)=><MessageItem key={message._id} message={message}/>)}
+            <TypingIndicator directMessage={id}/>
             <MessageInput directMessage={id}/>
             </ScrollArea>
             
@@ -46,6 +47,16 @@ export default function MessagePage({params}:{params:Promise<{id:Id<'directMessa
     
 }
 
+function TypingIndicator({directMessage}:{directMessage:Id<'directMessages'>}){
+    const usernames = useQuery(api.functions.typing.list,{directMessage})
+    if (!usernames || usernames.length==0){
+        return null
+    }
+    return <div className="text-sm text-muted-foreground px-4 py-2">
+        {usernames.length==1 ? `${usernames[0]} is typing...` :
+        `${usernames.join(', ')} are typing...`}
+    </div>
+}
 //what is this type????
 type Message = FunctionReturnType<typeof api.functions.message.list>[number]
 
@@ -97,6 +108,8 @@ function MessageActions({message}:{message:Message}){
 function MessageInput({directMessage}:{directMessage:Id<'directMessages'>}){  
     const [content,setContent] = useState('')
     const sendMessage = useMutation(api.functions.message.create)
+    const sendTypingIndicator = useMutation(api.functions.typing.upsert)
+
 
     const handleSubmit = async(e:React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault()
@@ -110,7 +123,12 @@ function MessageInput({directMessage}:{directMessage:Id<'directMessages'>}){
     }
     return (
         <form className='flex items-center p-4 gap-2' onSubmit={handleSubmit}>
-        <Input placeholder='Message' value={content} onChange={(e)=>setContent(e.target.value)}/>
+            {/**onKeydown means when the key is pressed. Here we use useState variabe by getting e.target.value. There was another example using currentTarget, check that out. */}
+        <Input placeholder='Message' value={content} onChange={(e)=>setContent(e.target.value)} onKeyDown={e=>{
+            if(content.length > 0){
+                sendTypingIndicator({directMessage})
+            }
+        }}/>
         <Button size='icon'>
         <SendIcon/>
         <span className='sr-only'>Send</span>

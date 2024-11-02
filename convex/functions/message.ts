@@ -1,6 +1,7 @@
 import {query,mutation} from '../_generated/server'
 import {v} from 'convex/values'
 import { authenticatedMutation, authenticatedQuery } from './helpers'
+import { internal } from '../_generated/api'
 
 export const list = authenticatedQuery({
     args:{
@@ -54,5 +55,7 @@ export const create = authenticatedMutation({
             throw new Error('You are not a member of this direct message')
         }
         await ctx.db.insert('messages',{directMessage,content,sender:ctx.user._id})
+        //this is for removing the type indicator 0 seconds after message is sent.
+        await ctx.scheduler.runAfter(0,internal.functions.typing.remove,{directMessage,user:ctx.user._id})
     }
 }) 
