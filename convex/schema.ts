@@ -10,9 +10,10 @@ export default defineSchema({
     }).index('by_clerkId', ['clerkId']).index('by_username', ['username']),
     messages: defineTable({
         // v used to declare type and validate it
-        sender: v.string(),
-        content: v.string()
-    }),
+        sender: v.id('users'),
+        content: v.string(),
+        directMessage: v.id('directMessages')
+    }).index('by_directMessage', ['directMessage']),
     friends: defineTable({
         //used to validate if this is actually a user
         //we will have user sending and receiving in this case, the friend request, acceptance, rejection, DM, or removal of friendship.
@@ -24,11 +25,11 @@ export default defineSchema({
        //index as a tuple like (1234,'pending') etc for userid and status
     }).index('by_user_sending_status', ['user_sending','status']).index('by_user_receiving_status', ['user_receiving','status']),
 
-    //analyze a bit more
+    //composite indexes boost efficienies for pairs
     directMessages : defineTable({}),
     directMessageMembers: defineTable({
-        directMessage : v.id('directMessages'),
-        user: v.id('users')
+    directMessage : v.id('directMessages'),
+    user: v.id('users')
     }).index('by_dm',['directMessage']).index('by_dm_user',['directMessage','user']).index('by_user', ['user'])
 })
 

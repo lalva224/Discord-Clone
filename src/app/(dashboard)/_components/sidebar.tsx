@@ -8,22 +8,15 @@ import { useQuery } from "convex/react";
 import { PlusIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { api } from '../../../../convex/_generated/api';
-import { NewDirectMessage } from "./new-direct-message";
 import { usePathname } from "next/navigation";
+import { NewDirectMessage } from "./new-direct-message";
 
 
-const useTestDirectMessages = () =>{
-    const user = useQuery(api.functions.user.get)
-    if(!user){
-        return []
-    }
-    return [user,user,user]
-}
 
 export function DashboardSidebar(){
     //I havent been able to find documentation for this on shadcn
     const user = useQuery(api.functions.user.get)
-    const directMessages = useTestDirectMessages()
+    const directMessages = useQuery(api.functions.dm.list)
     const pathname = usePathname()
     if(!user){
         return null
@@ -37,9 +30,9 @@ export function DashboardSidebar(){
                         <SidebarMenu>
                             <SidebarMenuItem>
                                 {/**button functionality is triggered by the link */}
-                                
+                                {/**IsActive just means the text will go bold */}
                                 <SidebarMenuButton asChild isActive={pathname=='/'}>
-                                    <Link href='/friends'><UserIcon/>Friends</Link>
+                                    <Link href='/'><UserIcon/>Friends</Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         </SidebarMenu>
@@ -50,17 +43,17 @@ export function DashboardSidebar(){
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {
-                                    directMessages.map((directMessage)=>(
+                                    directMessages?.map((directMessage)=>(
                                         <SidebarMenuItem key = {directMessage._id}>
                                             {/**asChild needs 1 child, not more. */}
-                                            {/**DM page only visible when in another DM page? */}
+                                            {/*IsActive just means text will go bold*/}
                                             <SidebarMenuButton asChild isActive={pathname==`/dms/${directMessage._id}`}>
                                                 <Link href={`/dms/${directMessage._id}`} >
                                                 <Avatar className = 'size-6'>
-                                                    <AvatarImage src = {directMessage.image}/>
-                                                    <AvatarFallback>{directMessage.username[0]}</AvatarFallback>
+                                                    <AvatarImage src = {directMessage.user.image}/>
+                                                    <AvatarFallback>{directMessage.user.username[0]}</AvatarFallback>
                                                 </Avatar>
-                                                <p className = 'font-medium'>{directMessage.username}</p>
+                                                <p className = 'font-medium'>{directMessage.user.username}</p>
                                                 </Link>
                                             </SidebarMenuButton>
                                             </SidebarMenuItem>
