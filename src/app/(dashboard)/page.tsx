@@ -7,7 +7,6 @@ import { api } from "../../../convex/_generated/api";
 import { AddFriend } from "./_components/add-friends";
 export default function FriendsPage(){
     const friends = useQuery(api.functions.friend.listPending)
-    console.log(friends)
     return(
         <>
         {/**
@@ -51,3 +50,4 @@ export default function FriendsPage(){
         </>
     )
 }
+

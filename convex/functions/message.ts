@@ -20,9 +20,12 @@ export const list = authenticatedQuery({
 
         return await Promise.all(messages.map(async (message)=>{
             const sender = await ctx.db.get(message.sender)
+            //why does having it conditionally like this and not with if statements. Is it due to asynchronous behavior?
+            const attachment = message.attachment ? await ctx.storage.getUrl(message.attachment) : undefined
             return {
                 ...message,
-                sender
+                sender,
+                attachment
             }
         }))
 
@@ -41,21 +44,33 @@ export const remove = authenticatedMutation({
             throw new Error('You are not the sender of this message')
         }
         await ctx.db.delete(id)
+        if(message.attachment){
+            //what exactly is the storage object?
+            await ctx.storage.delete(message.attachment)
+        }
     }
 })
 export const create = authenticatedMutation({
     //args is the arguments that need to be passed to the mutation
     args:{
         content: v.string(),
-        directMessage: v.id('directMessages')
+        directMessage: v.id('directMessages'),
+        attachment: v.optional(v.id('_storage'))
     },
-    handler: async(ctx,{directMessage,content})=>{
+    handler: async(ctx,{directMessage,content,attachment})=>{
         const member = await ctx.db.query('directMessageMembers').withIndex('by_dm_user',(q)=>q.eq('directMessage', directMessage).eq('user',ctx.user._id)).first()
         if(!member){
             throw new Error('You are not a member of this direct message')
         }
-        await ctx.db.insert('messages',{directMessage,content,sender:ctx.user._id})
+        await ctx.db.insert('messages',{directMessage,content,attachment,sender:ctx.user._id})
         //this is for removing the type indicator 0 seconds after message is sent.
         await ctx.scheduler.runAfter(0,internal.functions.typing.remove,{directMessage,user:ctx.user._id})
     }
 }) 
+
+export const generateUploadUrl = authenticatedMutation({
+    handler: async(ctx)=>{
+        //generates tempoary url, how would this be used?
+        return await ctx.storage.generateUploadUrl()
+    }
+})

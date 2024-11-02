@@ -12,7 +12,9 @@ export default defineSchema({
         // v used to declare type and validate it
         sender: v.id('users'),
         content: v.string(),
-        directMessage: v.id('directMessages')
+        directMessage: v.id('directMessages'),
+        //review this type
+        attachment: v.optional(v.id('_storage'))
     }).index('by_directMessage', ['directMessage']),
     friends: defineTable({
         //used to validate if this is actually a user
