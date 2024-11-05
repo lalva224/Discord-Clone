@@ -78,7 +78,7 @@ const mapWithUsers = async <K extends string, T extends{[key in K]: Id<'users'>}
     //without Promise.all() the items are returned one by one, which is bad UI.
      //Promise.all() waits for all promises to be fufilled, Promise.allSettled() waits for all promises to be settled( fufilled or rejected)
      //Promise would get rejected if user is not found. 
-    //why would the promise get rejected in the first place?
+    //Promise.allSettled() means If a promise gets rejected (a user not found) it will not stop the other promises from being fufilled.
     const result = await Promise.allSettled(items.map(async(item)=>{
         const user = await ctx.db.get(item[key])
         if (!user){
